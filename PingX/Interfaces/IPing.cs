@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Net.NetworkInformation;
 
 namespace PingX.Interfaces
 {
-    internal interface IPing
+    public interface IPing
     {
+        Task<PingReply> SendPingAsync(string ipAddress, int timeout);
     }
 }

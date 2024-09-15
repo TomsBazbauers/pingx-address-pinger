@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PingX.Interfaces
+﻿namespace PingX.Interfaces
 {
-    internal interface IOutputService
+    public interface IOutputService
     {
+        void PrintSummary(string destAddress, IList<IPingResult> results);
+
+        void PrintOperations(string source, IList<string> destinations);
+
+        void PrintHelp();
+
+        void PrintInvalidIpWarning();
     }
 }

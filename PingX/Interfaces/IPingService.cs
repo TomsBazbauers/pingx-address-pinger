@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PingX.Interfaces
+﻿namespace PingX.Interfaces
 {
-    internal interface IPingService
+    public interface IPingService
     {
+        Task<IPingResult> PingAsync(string ipAddress, int sequence);
     }
 }
