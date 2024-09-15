@@ -2,6 +2,6 @@
 {
     public interface INetworkHelper
     {
-        string GetLocalIPAddress();
+        public IList<string> GetLocalIPAddresses();
     }
 }

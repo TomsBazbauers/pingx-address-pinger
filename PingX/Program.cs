@@ -14,7 +14,6 @@ namespace PingX
         private readonly IInputValidator _inputValidator;
         private readonly INetworkHelper _networkHelper;
 
-
         public Program(IPingService pingService, 
             IInputValidator inputValidator, IOutputService outputService, INetworkHelper networkHelper)
         {
@@ -46,10 +45,9 @@ namespace PingX
                 return;
             }
 
-            var sourceIP = _networkHelper.GetLocalIPAddress();
-            _outputService.PrintOperations(sourceIP, ipAddresses);
-
+            var sourceIPs = _networkHelper.GetLocalIPAddresses();
             var resultsPerIp = new ConcurrentDictionary<string, IList<IPingResult>>();
+            _outputService.PrintOperations(sourceIPs, ipAddresses);
 
             var pingTasks = ipAddresses.Select(async ip =>
             {
@@ -67,13 +65,13 @@ namespace PingX
 
             await Task.WhenAll(pingTasks);
 
-            foreach (var ip in ipAddresses)
+            ipAddresses.ToList().ForEach(ip =>
             {
                 if (resultsPerIp.TryGetValue(ip, out var results))
                 {
                     _outputService.PrintSummary(ip, results);
                 }
-            }
+            });
         }
     }
 }
