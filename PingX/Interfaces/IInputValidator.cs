@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PingX.Interfaces
 {
-    internal interface IInputValidtor
+    internal interface IInputValidator
     {
     }
 }

@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PingX.Interfaces;
 
 namespace PingX.Services
 {
-    internal class PingService
+    public class PingService : IPingService
     {
+        private readonly IPing _ping;
+
+        public PingService(IPing ping)
+        {
+            _ping = ping;
+        }
+
+        public async Task<IPingResult> PingAsync(string ipAddress, int sequence)
+        {
+            // try send ping
+            // return pingresult
+        }
     }
 }

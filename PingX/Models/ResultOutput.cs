@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using PingX.Interfaces;
 
 namespace PingX.Models
 {
-    internal class ResultOutput
+    public class ConsoleOutput : IOutput
     {
+        public void WriteLine(string message)
+        {
+            Console.WriteLine(message);
+        }
     }
 }
