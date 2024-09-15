@@ -4,7 +4,9 @@
     {
         void PrintSummary(string destAddress, IList<IPingResult> results);
 
-        void PrintOperations(IList<string> sourceAddresses, IList<string> destinationAddresses);
+        void PrintIpAddresses(IList<string> sourceAddresses, IList<string> destinationAddresses);
+
+        Task PrintSpinner(Func<Task> action);
 
         void PrintHelp();
 

@@ -14,7 +14,7 @@ namespace PingX
         private readonly IInputValidator _inputValidator;
         private readonly INetworkHelper _networkHelper;
 
-        public Program(IPingService pingService, 
+        public Program(IPingService pingService,
             IInputValidator inputValidator, IOutputService outputService, INetworkHelper networkHelper)
         {
             _inputValidator = inputValidator;
@@ -47,23 +47,26 @@ namespace PingX
 
             var sourceIPs = _networkHelper.GetLocalIPAddresses();
             var resultsPerIp = new ConcurrentDictionary<string, IList<IPingResult>>();
-            _outputService.PrintOperations(sourceIPs, ipAddresses);
+            _outputService.PrintIpAddresses(sourceIPs, ipAddresses);
 
-            var pingTasks = ipAddresses.Select(async ip =>
+            await _outputService.PrintSpinner(async () =>
             {
-                IList<IPingResult> results = new List<IPingResult>();
-
-                for (int i = 0; i < 4; i++)
+                var pingTasks = ipAddresses.Select(async ip =>
                 {
-                    var result = await _pingService.PingAsync(ip, i + 1);
-                    results.Add(result);
-                    await Task.Delay(750);
-                }
+                    IList<IPingResult> results = new List<IPingResult>();
 
-                resultsPerIp[ip] = results;
-            }).ToList();
+                    for (int i = 0; i < 4; i++)
+                    {
+                        var result = await _pingService.PingAsync(ip, i + 1);
+                        results.Add(result);
+                        await Task.Delay(750);
+                    }
 
-            await Task.WhenAll(pingTasks);
+                    resultsPerIp[ip] = results;
+                }).ToList();
+
+                await Task.WhenAll(pingTasks);
+            });
 
             ipAddresses.ToList().ForEach(ip =>
             {
@@ -73,5 +76,6 @@ namespace PingX
                 }
             });
         }
+
     }
 }
