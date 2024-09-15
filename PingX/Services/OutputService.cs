@@ -1,4 +1,5 @@
 ﻿using PingX.Interfaces;
+using System.Net.NetworkInformation;
 
 namespace PingX.Services
 {
@@ -11,20 +12,41 @@ namespace PingX.Services
             _output = output;
         }
 
-        public void PrintSummary(String destAddress, IList<IPingResult> results)
+        public void PrintSummary(string destAddress, IList<IPingResult> results)
         {
-            // ending stats console output/ui logic
+            _output.WriteLine($"\nPing statistics for {destAddress}:");
+
+            var sent = results.Count;
+            var received = results.Count(r => r.Status == IPStatus.Success);
+            var lost = sent - received;
+            var lossPercent = (double)lost / sent * 100;
+
+            _output.WriteLine($"    Packets: Sent = {sent}, Received = {received}, Lost = {lost} ({lossPercent}% loss)");
+
+            if (received > 0)
+            {
+                var roundtripTimes = results
+                    .Where(r => r.Status == IPStatus.Success)
+                    .Select(r => r.RoundtripTime.Value);
+
+                _output.WriteLine("Approximate round trip times(ms):");
+                _output.WriteLine($"    Min = {(int)roundtripTimes.Min()}ms, Max = {(int)roundtripTimes.Max()}ms, Ave = {(int)roundtripTimes.Average()}ms");
+            }
         }
 
         public void PrintOperations(string source, IList<string> destinations)
         {
-            // print pinging...
+            Console.WriteLine($"Source: {source}, Pinging: {string.Join(", ", destinations)}...");
         }
 
         public void PrintHelp()
         {
-            //print -h
-            // use json/yaml??
+            Console.WriteLine("<Some help info>");
+        }
+
+        public void PrintInvalidIpWarning()
+        {
+            Console.WriteLine("Please provide valid IP addresses to ping!");
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace PingX.Models
 {
-    public class ConsoleOutput : IOutput
+    public class Output : IOutput
     {
         public void WriteLine(string message)
         {

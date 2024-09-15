@@ -2,10 +2,12 @@
 {
     public interface IOutputService
     {
-        void PrintSummary();
+        void PrintSummary(string destAddress, IList<IPingResult> results);
 
-        void PrintOperations();
+        void PrintOperations(string source, IList<string> destinations);
 
         void PrintHelp();
+
+        void PrintInvalidIpWarning();
     }
 }

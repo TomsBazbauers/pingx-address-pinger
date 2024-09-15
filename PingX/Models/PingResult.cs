@@ -17,7 +17,7 @@ namespace PingX.Models
 
         public int? BufferSize { get; }
 
-        public int? TimeToLive { get; }
+        public int? TTL { get; }
 
         public PingResult(string ipAddress, IPStatus status,
             long? roundtripTime, string errorMessage, int sequence, int? bufferSize, int? timeToLive)
@@ -28,7 +28,7 @@ namespace PingX.Models
             ErrorMessage = errorMessage;
             Sequence = sequence;
             BufferSize = bufferSize;
-            TimeToLive = timeToLive;
+            TTL = timeToLive;
         }
     }
 }

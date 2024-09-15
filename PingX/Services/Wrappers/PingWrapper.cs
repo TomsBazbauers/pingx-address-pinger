@@ -14,7 +14,6 @@ namespace PingX.Services.Wrappers
 
         public Task<PingReply> SendPingAsync(string ipAddress, int timeout)
         {
-
             return _ping.SendPingAsync(ipAddress, timeout);
         }
     }
