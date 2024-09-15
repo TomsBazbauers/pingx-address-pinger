@@ -4,23 +4,24 @@ using PingX.Models;
 using PingX.Services;
 using PingX.Services.Wrappers;
 using System.Collections.Concurrent;
-using System.Net;
-using System.Net.Sockets;
 
 namespace PingX
 {
     class Program
     {
-        private readonly IInputValidator _inputValidator;
         private readonly IPingService _pingService;
         private readonly IOutputService _outputService;
+        private readonly IInputValidator _inputValidator;
+        private readonly INetworkHelper _networkHelper;
 
-        public Program(IInputValidator inputValidator,
-            IPingService pingService, IOutputService outputService)
+
+        public Program(IPingService pingService, 
+            IInputValidator inputValidator, IOutputService outputService, INetworkHelper networkHelper)
         {
             _inputValidator = inputValidator;
             _pingService = pingService;
             _outputService = outputService;
+            _networkHelper = networkHelper;
         }
 
         static async Task Main(string[] args)
@@ -30,8 +31,9 @@ namespace PingX
             IOutput output = new Output();
             IOutputService outputService = new OutputService(output);
             IInputValidator inputValidator = new InputValidator(outputService);
+            INetworkHelper networkHelper = new NetworkHelper();
 
-            var program = new Program(inputValidator, pingService, outputService);
+            var program = new Program(pingService, inputValidator, outputService, networkHelper);
             await program.Run(args);
         }
 
@@ -44,7 +46,7 @@ namespace PingX
                 return;
             }
 
-            var sourceIP = GetLocalIPAddress();
+            var sourceIP = _networkHelper.GetLocalIPAddress();
             _outputService.PrintOperations(sourceIP, ipAddresses);
 
             var resultsPerIp = new ConcurrentDictionary<string, IList<IPingResult>>();
@@ -72,20 +74,6 @@ namespace PingX
                     _outputService.PrintSummary(ip, results);
                 }
             }
-        }
-
-        public static string GetLocalIPAddress()
-        {
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    return ip.ToString();
-                }
-            }
-
-            return "<N/A>";
         }
     }
 }
