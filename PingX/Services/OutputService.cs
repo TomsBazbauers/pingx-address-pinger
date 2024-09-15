@@ -21,7 +21,16 @@ namespace PingX.Services
             var lost = sent - received;
             var lossPercent = (double)lost / sent * 100;
 
+            Console.ForegroundColor = lossPercent switch
+            {
+                0 => ConsoleColor.Green,
+                25 => ConsoleColor.DarkYellow,
+                > 25 => ConsoleColor.Red,
+                _ => Console.ForegroundColor
+            };
+
             _output.WriteLine($"    Packets: Sent = {sent}, Received = {received}, Lost = {lost} ({lossPercent}% loss)");
+            Console.ResetColor();
 
             if (received > 0)
             {
@@ -34,9 +43,16 @@ namespace PingX.Services
             }
         }
 
-        public void PrintOperations(string source, IList<string> destinations)
+        public void PrintOperations(IList<string> sourceAddresses, IList<string> destinationAddresses)
         {
-            Console.WriteLine($"Source: {source}, Pinging: {string.Join(", ", destinations)}...");
+            Console.WriteLine($"\nAvailable source addreses:");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"{string.Join(", ", sourceAddresses)}");
+            Console.ResetColor();
+            Console.WriteLine($"\nDestination addresses:");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine($"{string.Join(", ", destinationAddresses)}\n");
+            Console.ResetColor();
         }
 
         public void PrintHelp()
@@ -46,7 +62,9 @@ namespace PingX.Services
 
         public void PrintInvalidIpWarning()
         {
-            Console.WriteLine("Please provide valid IP addresses to ping!");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Please provide valid IP addresses to ping!");
+            Console.ResetColor();
         }
     }
 }
