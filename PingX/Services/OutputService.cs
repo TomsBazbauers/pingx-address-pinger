@@ -6,6 +6,7 @@ namespace PingX.Services
     public class OutputService : IOutputService
     {
         private readonly IOutput _output;
+        static readonly object _consoleLock = new object();
 
         public OutputService(IOutput output)
         {
@@ -48,7 +49,7 @@ namespace PingX.Services
             }
         }
 
-        public void PrintOperations(IList<string> sourceAddresses, IList<string> destinationAddresses)
+        public void PrintIpAddresses(IList<string> sourceAddresses, IList<string> destinationAddresses)
         {
             PrintMessage("\nAvailable source addresses:", ConsoleColor.White);
             PrintMessage(string.Join(", ", sourceAddresses), ConsoleColor.Blue);
@@ -72,6 +73,34 @@ namespace PingX.Services
             _output.ForegroundColor(color);
             _output.WriteLine(message);
             _output.ResetColor();
+        }
+
+        public async Task PrintSpinner(Func<Task> action)
+        {
+            var spinnerElements = new[] { '/', '\\', '|', '-' };
+            int spinnerIndex = 0;
+            bool running = true;
+
+            var spinnerTask = Task.Run(async () =>
+            {
+                while (running)
+                {
+                    lock (_consoleLock)
+                    {
+                        Console.Write($"\b{spinnerElements[spinnerIndex]}");
+                        spinnerIndex = (spinnerIndex + 1) % spinnerElements.Length;
+                    }
+
+                    await Task.Delay(100);
+                }
+            });
+
+            await action();
+            running = false;
+            await spinnerTask;
+
+            Console.Write("\b \b");
+            Console.WriteLine();
         }
     }
 }
