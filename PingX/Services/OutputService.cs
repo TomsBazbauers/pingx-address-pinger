@@ -14,23 +14,24 @@ namespace PingX.Services
 
         public void PrintSummary(string destAddress, IList<IPingResult> results)
         {
-            _output.WriteLine($"\nPing statistics for {destAddress}:");
+            string statsHeaderMessage = $"\nPing statistics for {destAddress}:";
+            PrintMessage(statsHeaderMessage, ConsoleColor.White);
 
             var sent = results.Count;
             var received = results.Count(r => r.Status == IPStatus.Success);
             var lost = sent - received;
             var lossPercent = (double)lost / sent * 100;
+            string packetsMessage = $"    Packets: Sent = {sent}, Received = {received}, Lost = {lost} ({lossPercent}% loss)";
 
-            Console.ForegroundColor = lossPercent switch
+            ConsoleColor color = lossPercent switch
             {
                 0 => ConsoleColor.Green,
                 25 => ConsoleColor.DarkYellow,
                 > 25 => ConsoleColor.Red,
-                _ => Console.ForegroundColor
+                _ => ConsoleColor.White
             };
 
-            _output.WriteLine($"    Packets: Sent = {sent}, Received = {received}, Lost = {lost} ({lossPercent}% loss)");
-            Console.ResetColor();
+            PrintMessage(packetsMessage, color);
 
             if (received > 0)
             {
@@ -38,33 +39,39 @@ namespace PingX.Services
                     .Where(r => r.Status == IPStatus.Success)
                     .Select(r => r.RoundtripTime.Value);
 
-                _output.WriteLine("Approximate round trip times(ms):");
-                _output.WriteLine($"    Min = {(int)roundtripTimes.Min()}ms, Max = {(int)roundtripTimes.Max()}ms, Ave = {(int)roundtripTimes.Average()}ms");
+                string roundtripMessage = "Approximate round trip times(ms):";
+                string timeStatsMessage = $"    Min = {(int)roundtripTimes.Min()}ms, " +
+                    $"Max = {(int)roundtripTimes.Max()}ms, Ave = {(int)roundtripTimes.Average()}ms";
+
+                PrintMessage(roundtripMessage, ConsoleColor.White);
+                PrintMessage(timeStatsMessage, ConsoleColor.White);
             }
         }
 
         public void PrintOperations(IList<string> sourceAddresses, IList<string> destinationAddresses)
         {
-            Console.WriteLine($"\nAvailable source addreses:");
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"{string.Join(", ", sourceAddresses)}");
-            Console.ResetColor();
-            Console.WriteLine($"\nDestination addresses:");
-            Console.ForegroundColor = ConsoleColor.Blue;
-            Console.WriteLine($"{string.Join(", ", destinationAddresses)}\n");
-            Console.ResetColor();
+            PrintMessage("\nAvailable source addresses:", ConsoleColor.White);
+            PrintMessage(string.Join(", ", sourceAddresses), ConsoleColor.Blue);
+
+            PrintMessage("\nDestination addresses:", ConsoleColor.White);
+            PrintMessage(string.Join(", ", destinationAddresses), ConsoleColor.Blue);
         }
 
         public void PrintHelp()
         {
-            Console.WriteLine("<Some help info>");
+            PrintMessage("<Some help info>", ConsoleColor.White);
         }
 
         public void PrintInvalidIpWarning()
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Please provide valid IP addresses to ping!");
-            Console.ResetColor();
+            PrintMessage("Please provide valid IP addresses to ping!", ConsoleColor.Red);
+        }
+
+        private void PrintMessage(string message, ConsoleColor color)
+        {
+            _output.ForegroundColor(color);
+            _output.WriteLine(message);
+            _output.ResetColor();
         }
     }
 }

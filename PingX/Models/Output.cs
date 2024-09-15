@@ -8,5 +8,15 @@ namespace PingX.Models
         {
             Console.WriteLine(message);
         }
+
+        public void ResetColor()
+        {
+            Console.ResetColor();
+        }
+
+        public void ForegroundColor(ConsoleColor color)
+        {
+            Console.ForegroundColor = color;
+        }
     }
 }
