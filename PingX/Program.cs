@@ -29,9 +29,9 @@ namespace PingX
             IPingService pingService = new PingService(pingWrapper);
             IOutput output = new Output();
             IOutputService outputService = new OutputService(output);
-            IInputValidator inputValidator = new InputValidator(outputService);
+            IInputValidator inputValidator = new InputValidator();
             INetworkHelper networkHelper = new NetworkHelper();
-
+             
             var program = new Program(pingService, inputValidator, outputService, networkHelper);
             await program.Run(args);
         }
@@ -42,6 +42,7 @@ namespace PingX
 
             if (ipAddresses == null)
             {
+                _outputService.PrintInvalidIpWarning();
                 return;
             }
 
