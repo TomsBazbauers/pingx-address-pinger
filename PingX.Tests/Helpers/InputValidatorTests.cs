@@ -9,7 +9,7 @@ public class InputValidatorTests
     [InlineData(new string[] { "192.168.1.1", "192.168.1.1" }, new string[] { "192.168.1.1" })]
     [InlineData(new string[] { "invalid-ip", "192.168.1.1" }, new string[] { "192.168.1.1" })]
     [InlineData(new string[] { "invalid-ip", "", "192.168.1.1", "192.168.88.ip" }, new string[] { "192.168.1.1" })]
-    [InlineData(new string[] { "invalid-ip", "also-invalid" }, null)]
+    [InlineData(new string[] { "127.0.0.1", "invalid-ip", "also-invalid" }, null)]
     [InlineData(new string[] { }, null)]
     [InlineData(null, null)]
     public void ValidateIPAddresses_ShouldReturnExpectedResults(string[] input, string[] expectedOutput)
