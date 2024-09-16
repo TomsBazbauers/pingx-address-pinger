@@ -30,7 +30,6 @@ class Program
             .AddTransient<IInputValidator, InputValidator>()
             .AddSingleton<IOutput, Output>()
             .AddSingleton<IOutputService, OutputService>()
-            .AddSingleton<INetworkInterfaceProvider, NetworkInterfaceProvider>()
             .AddSingleton<INetworkHelper, NetworkHelper>()
             .AddSingleton<Program>()
             .BuildServiceProvider();
