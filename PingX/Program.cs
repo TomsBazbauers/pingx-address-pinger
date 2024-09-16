@@ -30,7 +30,8 @@ namespace PingX
             IOutput output = new Output();
             IOutputService outputService = new OutputService(output);
             IInputValidator inputValidator = new InputValidator();
-            INetworkHelper networkHelper = new NetworkHelper();
+            INetworkInterfaceProvider provider = new NetworkInterfaceProvider();
+            INetworkHelper networkHelper = new NetworkHelper(provider);
              
             var program = new Program(pingService, inputValidator, outputService, networkHelper);
             await program.Run(args);
