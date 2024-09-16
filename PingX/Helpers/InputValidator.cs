@@ -5,13 +5,6 @@ namespace PingX.Helpers
 {
     public class InputValidator : IInputValidator
     {
-        private readonly IOutputService _output;
-
-        public InputValidator(IOutputService output)
-        {
-            _output = output;
-        }
-
         public IList<string> ValidateIPAddresses(string[] args)
         {
             var ipAddresses = args?
@@ -19,13 +12,7 @@ namespace PingX.Helpers
                 .Distinct()
                 .ToList();
 
-            if (ipAddresses == null || !ipAddresses.Any())
-            {
-                _output.PrintInvalidIpWarning();
-                return null;
-            }
-
-            return ipAddresses;
+            return ipAddresses == null || !ipAddresses.Any() ? null : ipAddresses;
         }
     }
 }

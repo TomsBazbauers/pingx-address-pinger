@@ -1,81 +1,83 @@
-﻿using PingX.Helpers;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Concurrent;
+using PingX.Helpers;
 using PingX.Interfaces;
 using PingX.Models;
-using PingX.Services;
 using PingX.Services.Wrappers;
-using System.Collections.Concurrent;
+using PingX.Services;
 
-namespace PingX
+class Program
 {
-    class Program
+    private readonly IPingService _pingService;
+    private readonly IOutputService _outputService;
+    private readonly IInputValidator _inputValidator;
+    private readonly INetworkHelper _networkHelper;
+
+    public Program(IPingService pingService,
+        IInputValidator inputValidator, IOutputService outputService, INetworkHelper networkHelper)
     {
-        private readonly IPingService _pingService;
-        private readonly IOutputService _outputService;
-        private readonly IInputValidator _inputValidator;
-        private readonly INetworkHelper _networkHelper;
+        _inputValidator = inputValidator;
+        _pingService = pingService;
+        _outputService = outputService;
+        _networkHelper = networkHelper;
+    }
 
-        public Program(IPingService pingService,
-            IInputValidator inputValidator, IOutputService outputService, INetworkHelper networkHelper)
+    static async Task Main(string[] args)
+    {
+        var serviceProvider = new ServiceCollection()
+            .AddTransient<IPing, PingWrapper>()
+            .AddTransient<IPingService, PingService>()
+            .AddTransient<IInputValidator, InputValidator>()
+            .AddSingleton<IOutput, Output>()
+            .AddSingleton<IOutputService, OutputService>()
+            .AddSingleton<INetworkInterfaceProvider, NetworkInterfaceProvider>()
+            .AddSingleton<INetworkHelper, NetworkHelper>()
+            .AddSingleton<Program>()
+            .BuildServiceProvider();
+
+        var program = serviceProvider.GetRequiredService<Program>();
+        await program.Run(args);
+    }
+
+    public async Task Run(string[] args)
+    {
+        var ipAddresses = _inputValidator.ValidateIPAddresses(args);
+
+        if (ipAddresses == null)
         {
-            _inputValidator = inputValidator;
-            _pingService = pingService;
-            _outputService = outputService;
-            _networkHelper = networkHelper;
+            _outputService.PrintInvalidIpWarning();
+            return;
         }
 
-        static async Task Main(string[] args)
+        var sourceIPs = _networkHelper.GetLocalIPAddresses();
+        var resultsPerIp = new ConcurrentDictionary<string, IList<IPingResult>>();
+        _outputService.PrintIpAddresses(sourceIPs, ipAddresses);
+
+        await _outputService.PrintSpinner(async () =>
         {
-            IPing pingWrapper = new PingWrapper();
-            IPingService pingService = new PingService(pingWrapper);
-            IOutput output = new Output();
-            IOutputService outputService = new OutputService(output);
-            IInputValidator inputValidator = new InputValidator(outputService);
-            INetworkHelper networkHelper = new NetworkHelper();
-
-            var program = new Program(pingService, inputValidator, outputService, networkHelper);
-            await program.Run(args);
-        }
-
-        public async Task Run(string[] args)
-        {
-            var ipAddresses = _inputValidator.ValidateIPAddresses(args);
-
-            if (ipAddresses == null)
+            var pingTasks = ipAddresses.Select(async ip =>
             {
-                return;
-            }
+                IList<IPingResult> results = new List<IPingResult>();
 
-            var sourceIPs = _networkHelper.GetLocalIPAddresses();
-            var resultsPerIp = new ConcurrentDictionary<string, IList<IPingResult>>();
-            _outputService.PrintIpAddresses(sourceIPs, ipAddresses);
-
-            await _outputService.PrintSpinner(async () =>
-            {
-                var pingTasks = ipAddresses.Select(async ip =>
+                for (int i = 0; i < 4; i++)
                 {
-                    IList<IPingResult> results = new List<IPingResult>();
-
-                    for (int i = 0; i < 4; i++)
-                    {
-                        var result = await _pingService.PingAsync(ip, i + 1);
-                        results.Add(result);
-                        await Task.Delay(750);
-                    }
-
-                    resultsPerIp[ip] = results;
-                }).ToList();
-
-                await Task.WhenAll(pingTasks);
-            });
-
-            ipAddresses.ToList().ForEach(ip =>
-            {
-                if (resultsPerIp.TryGetValue(ip, out var results))
-                {
-                    _outputService.PrintSummary(ip, results);
+                    var result = await _pingService.PingAsync(ip, i + 1);
+                    results.Add(result);
+                    await Task.Delay(750);
                 }
-            });
-        }
 
+                resultsPerIp[ip] = results;
+            }).ToList();
+
+            await Task.WhenAll(pingTasks);
+        });
+
+        ipAddresses.ToList().ForEach(ip =>
+        {
+            if (resultsPerIp.TryGetValue(ip, out var results))
+            {
+                _outputService.PrintSummary(ip, results);
+            }
+        });
     }
 }
