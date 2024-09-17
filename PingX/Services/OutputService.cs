@@ -28,8 +28,7 @@ namespace PingX.Services
             {
                 0 => ConsoleColor.Green,
                 25 => ConsoleColor.DarkYellow,
-                > 25 => ConsoleColor.Red,
-                _ => ConsoleColor.White
+                _ => ConsoleColor.Red
             };
 
             PrintMessage(packetsMessage, color);

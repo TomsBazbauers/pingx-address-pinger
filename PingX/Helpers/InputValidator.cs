@@ -9,6 +9,7 @@ namespace PingX.Helpers
         {
             var ipAddresses = args?
                 .Where(ip => IPAddress.TryParse(ip, out _))
+                .Where(ip => !ip.StartsWith("127.0"))
                 .Distinct()
                 .ToList();
 
