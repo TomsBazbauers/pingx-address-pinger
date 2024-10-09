@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Collections.Concurrent;
 using PingX.Helpers;
 using PingX.Interfaces;
 using PingX.Models;
-using PingX.Services.Wrappers;
 using PingX.Services;
+using PingX.Services.Wrappers;
+using System.Collections.Concurrent;
 
 class Program
 {

@@ -9,6 +9,16 @@ namespace PingX.Models
             Console.WriteLine(message);
         }
 
+        public void WriteLine()
+        {
+            Console.WriteLine();
+        }
+
+        public void Write(string message)
+        {
+            Console.Write(message);
+        }
+
         public void ResetColor()
         {
             Console.ResetColor();

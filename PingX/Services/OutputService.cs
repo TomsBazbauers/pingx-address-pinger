@@ -13,6 +13,42 @@ namespace PingX.Services
             _output = output;
         }
 
+        public async Task PrintSpinner(Func<Task> action)
+        {
+            var spinnerElements = new[] { "/", "\\", "|", "-" };
+            int spinnerIndex = 0;
+            bool running = true;
+            int delay = 120;
+
+            var spinnerTask = Task.Run(async () =>
+            {
+                while (running)
+                {
+                    lock (_consoleLock)
+                    {
+                        _output.Write($"\b{spinnerElements[spinnerIndex]}");
+                        spinnerIndex = (spinnerIndex + 1) % spinnerElements.Length;
+                    }
+
+                    await Task.Delay(delay);
+                }
+            });
+
+            await action();
+            running = false;
+            await spinnerTask;
+
+            _output.Write("\b \b");
+            _output.WriteLine();
+        }
+
+        private void PrintMessage(string message, ConsoleColor color)
+        {
+            _output.ForegroundColor(color);
+            _output.WriteLine(message);
+            _output.ResetColor();
+        }
+
         public void PrintSummary(string destAddress, IList<IPingResult> results)
         {
             string statsHeaderMessage = $"\nPing statistics for {destAddress}:";
@@ -65,41 +101,6 @@ namespace PingX.Services
         public void PrintInvalidIpWarning()
         {
             PrintMessage("Please provide valid IP addresses to ping!", ConsoleColor.Red);
-        }
-
-        private void PrintMessage(string message, ConsoleColor color)
-        {
-            _output.ForegroundColor(color);
-            _output.WriteLine(message);
-            _output.ResetColor();
-        }
-
-        public async Task PrintSpinner(Func<Task> action)
-        {
-            var spinnerElements = new[] { '/', '\\', '|', '-' };
-            int spinnerIndex = 0;
-            bool running = true;
-
-            var spinnerTask = Task.Run(async () =>
-            {
-                while (running)
-                {
-                    lock (_consoleLock)
-                    {
-                        Console.Write($"\b{spinnerElements[spinnerIndex]}");
-                        spinnerIndex = (spinnerIndex + 1) % spinnerElements.Length;
-                    }
-
-                    await Task.Delay(100);
-                }
-            });
-
-            await action();
-            running = false;
-            await spinnerTask;
-
-            Console.Write("\b \b");
-            Console.WriteLine();
         }
     }
 }
