@@ -8,7 +8,7 @@ It works like the standard Windows `ping` command but allows simultaneous pings 
 ## Features
 
 - **Parallel Pinging**: Ping multiple IP addresses or hostnames simultaneously;
-- **Standard Output**: Maintains familiar ping response times and statistics;
+- **Standard Output**: Maintains the familiar ping response time and statistics output;
 - **Available network interface display**: Displays available `up` network interfaces, their IP addresses;
 
 ## Requirements
@@ -25,7 +25,14 @@ It works like the standard Windows `ping` command but allows simultaneous pings 
 
 ### Option (b) - If you do not trust this code
 1. **Download or Clone** the source code/repository
-2. **Publish** the app by opening the solution's directory and running `dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true --self-contained false -o publish`
-3. **Create** the batch script to run the app without installation by creating a text file with contents `@echo off "%~dp0PingX.exe" %*` and saving it as a .bat file
+2. **Publish** the app by opening the solution's directory and running: `dotnet publish -c Release -r win-x64 -p:PublishSingleFile=true --self-contained false -o publish`
+3. **Create** the batch script to run the app without installation by creating a text file with contents: `@echo off "%~dp0PingX.exe" %*` and saving it as a .bat file
 4. **Place** both files in `C:\Users\{YourUserName}\AppData\Local\Microsoft\WindowsApps`
 5. **Run** by opening CMD and typing `pinx {IP addresses}`, e.g., `pingx 1.1.1.1 8.8.8.8 192.168.88.251`
+
+<br><br>
+
+![pingx-example](https://github.com/user-attachments/assets/fe3c02e1-5601-4465-9b68-2d049a3460f6)
+
+   
+
