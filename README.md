@@ -21,7 +21,7 @@ It works like the standard Windows `ping` command but allows simultaneous pings 
 ### Option (a) - If you trust this code
 1. **Download** `PingX.exe` and `pingx.bat` from the [latest release](https://github.com/YourUsername/PingX/releases).
 2. **Place** both files in `C:\Users\{YourUserName}\AppData\Local\Microsoft\WindowsApps`
-3. **Run** by opening CMD and typing `pinx {IP addresses}`, e.g., `pingx 1.1.1.1 8.8.8.8 192.168.88.251`
+3. **Run** by opening CMD and typing `pingx {IP addresses}`, e.g., `pingx 1.1.1.1 8.8.8.8 192.168.88.251`
 
 ### Option (b) - If you do not trust this code
 1. **Download or Clone** the source code/repository
