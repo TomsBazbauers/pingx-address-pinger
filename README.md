@@ -31,8 +31,6 @@ It works like the standard Windows `ping` command but allows simultaneous pings 
 5. **Run** by opening CMD and typing `pinx {IP addresses}`, e.g., `pingx 1.1.1.1 8.8.8.8 192.168.88.251`
 
 <br><br>
+![pingx-example](https://github.com/user-attachments/assets/91ff4670-9f70-4650-8087-ae3e5f2dc8ea)
 
-![pingx-example](https://github.com/user-attachments/assets/fe3c02e1-5601-4465-9b68-2d049a3460f6)
-
-   
 
