@@ -1,7 +1,4 @@
-# PingX
-
 PingX is a simple console tool that allows users to ping multiple IP addresses in parallel. 
-
 It works like the standard Windows `ping` command but allows simultaneous pings to multiple IPs, with response times and other statistics remaining unchanged.
 
 
